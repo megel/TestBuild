@@ -28,7 +28,7 @@ jobs:
     - run: dotnet --info
 
     - name: PowerApps-Language-Tooling Bin (win)
-      run: cd ${{ env.PASOPA_SRC }};./build ci;cd ..;move ${{ env.PASOPA_OUT }} ./bin;rmdir /S ${{ env.PASOPA_SRC }};dir /s ./bin;
+      run: cd ${{ env.PASOPA_SRC }} & ./build ci & cd .. & move ${{ env.PASOPA_OUT }} ./bin & rmdir /S ${{ env.PASOPA_SRC }} & dir /s ./bin
       shell: cmd
       if: ${{ runner.os == 'Windows' }} 
       
