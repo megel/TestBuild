@@ -38,12 +38,11 @@ jobs:
         path: 'src'
         token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
-    - name: PowerApps-Language-Tooling
-      uses: canastro/copy-file-action@master
-      with:
-        source: "./PowerApps-Language-Tooling/bin/Debug"
-        target: "./src/bin"
+    - name: Copy PowerApps-Language-Tooling Bin
+      run: cp -R ./PowerApps-Language-Tooling/bin/Debug ./src/bin
 
+    - name: Dir PowerApps-Language-Tooling Bin
+      run: ls -all ./src/bin
 #   test:
 #     name: Test
 # #    needs: build
