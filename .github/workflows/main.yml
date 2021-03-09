@@ -3,8 +3,8 @@ on:
     branches: [master]
 
 jobs:
-  build:
-    name: Build
+  build-pasopa:
+    name: Build PowerApps-Language-Tooling
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -49,11 +49,44 @@ jobs:
         ls -R -all ./bin
       if: ${{ runner.os != 'Windows' }}
 
+    - name: Temporarily save Docker image
+      uses: actions/upload-artifact@v2
+      with:
+        name: PASopa-bin-${{ matrix.os }}
+        path: ./bin
+        retention-days: 1
+
+  build:
+    needs: build-pasopa
+    runs-on: ubuntu-latest
+    steps:
     - name: Check out Self
       uses: actions/checkout@master
       with:
         path: '.'
         token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+
+    - name: Download PASopa-bin-macos-latest
+      uses: actions/download-artifact@v2
+      with:
+        name: PASopa-bin-macos-latest
+        path: ./bin/macos
+
+    - name: Download PASopa-bin-ubuntu-latest
+      uses: actions/download-artifact@v2
+      with:
+        name: PASopa-bin-ubuntu-latest
+        path: ./bin/ubuntu
+
+    - name: Download PASopa-bin-windows-latest
+      uses: actions/download-artifact@v2
+      with:
+        name: PASopa-bin-windows-latest
+        path: ./bin/windows
+    
+    - name: check BIN content
+      run: |
+        ls -R -all ./bin
 
 #   test:
 #     name: Test
