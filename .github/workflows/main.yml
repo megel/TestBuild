@@ -1,12 +1,6 @@
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - '.github/**'
-      - 'doc/**'
-      - 'media/**'
-      - 'package.json'
-      - 'CHANGELOG.md'
 
 jobs:
   build:
