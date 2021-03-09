@@ -23,13 +23,13 @@ jobs:
     - run: dotnet --info
 
     - name: Build and test (win)
-      run: ./PowerApps-Language-Tooling/build ci
+      run: cd ./PowerApps-Language-Tooling;./build ci
       shell: cmd
       if: ${{ runner.os == 'Windows' }} 
       
       ## Only difference here is not forcing cmd
     - name: Build and test (!win)
-      run: dotnet run --project "./PowerApps-Language-Tooling/targets/targets.csproj" -- "ci"
+      run: cd ./PowerApps-Language-Tooling;./build ci
       if: ${{ runner.os != 'Windows' }}
 
     - name: Check out Self
