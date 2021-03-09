@@ -7,7 +7,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       DOTNET_NOLOGO: true
@@ -19,7 +19,7 @@ jobs:
       with:
         repository: microsoft/PowerApps-Language-Tooling
         token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-        path: 'PowerApps-Language-Tooling'
+        path: ${{ env.PASOPA_SRC }}
 
     - uses: actions/setup-dotnet@v1
       with:
@@ -28,13 +28,13 @@ jobs:
     - run: dotnet --info
 
     - name: PowerApps-Language-Tooling Bin (win)
-      run: cd ${{ env.PASOPA_SRC }};./build ci;move ${{ env.PASOPA_OUT }} ./bin;rmdir /S ${{ env.PASOPA_SRC }};dir /s ./bin;
+      run: cd ${{ env.PASOPA_SRC }};./build ci;cd ..;move ${{ env.PASOPA_OUT }} ./bin;rmdir /S ${{ env.PASOPA_SRC }};dir /s ./bin;
       shell: cmd
       if: ${{ runner.os == 'Windows' }} 
       
       ## Only difference here is not forcing cmd
     - name: PowerApps-Language-Tooling Bin (!win)
-      run: cd ${{ env.PASOPA_SRC }};./build ci;mv ${{ env.PASOPA_OUT }} ./bin;rm -r ${{ env.PASOPA_SRC }};ls -R -all ./bin;
+      run: cd ${{ env.PASOPA_SRC }};./build ci;cd ..;mv ${{ env.PASOPA_OUT }} ./bin;rm -r ${{ env.PASOPA_SRC }};ls -R -all ./bin;
       if: ${{ runner.os != 'Windows' }}
 
     - name: Check out Self
