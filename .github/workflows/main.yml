@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DOTNET_NOLOGO: true
-      PASOPA_OUT: ./PowerApps-Language-Tooling/bin/Debug/PASopa
+      PASOPA_BIN: ./PowerApps-Language-Tooling/bin/Debug/PASopa
       PASOPA_SRC: ./PowerApps-Language-Tooling
     steps:
     - name: Check out PowerApps-Language-Tooling
@@ -41,11 +41,11 @@ jobs:
         ./build ci
       if: ${{ runner.os != 'Windows' }}
 
-    - name: Temporarily save PowerApps-Language-Tooling
+    - name: Temporarily save PowerApps-Language-Tooling Bin
       uses: actions/upload-artifact@v2
       with:
         name: PASopa-bin-${{ matrix.os }}
-        path: ${{ env.PASOPA_SRC }}
+        path: ${{ env.PASOPA_BIN }}
         retention-days: 1
 
   build:
