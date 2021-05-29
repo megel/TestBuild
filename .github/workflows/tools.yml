@@ -1,0 +1,44 @@
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-pasopa:
+    name: Build PowerApps-Language-Tooling
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      DOTNET_NOLOGO: true
+      TOOLS_BIN:  ./Tools
+    steps:
+    
+    - name: Install Tools
+      shell: pwsh
+      run: |
+        $toolsDir = "${{ env.TOOLS_BIN }}"
+        New-Item $nugetDir -ItemType Directory -Force
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        $sourceNugetExe = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+        $targetNugetExe = ".\nuget.exe"
+        Remove-Item $toolsDir -Force -Recurse -ErrorAction Ignore
+        Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
+        Set-Alias nuget ".\nuget.exe" -Scope Global -Verbose
+
+        ##
+        ##Download CoreTools
+        ##
+        . nuget install  Microsoft.CrmSdk.CoreTools -O $toolsDir
+        New-Item $toolsDir\CoreTools -ItemType Directory -Force
+        $coreToolsFolder = Get-ChildItem $toolsDir | Where-Object {$_.Name -match 'Microsoft.CrmSdk.CoreTools.'}
+        Move-Item "$($coreToolsFolder.FullName)\content\bin\coretools\*" -Destination "$toolsDir\CoreTools" -Force
+        Remove-Item $coreToolsFolder.FullName -Force -Recurse       
+    
+    - name: Tools Bin
+      uses: actions/upload-artifact@v2
+      with:
+        name: Tools-bin-${{ matrix.os }}
+        path: ${{ env.TOOLS_BIN }}
+        retention-days: 1
+
