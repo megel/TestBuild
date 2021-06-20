@@ -40,27 +40,7 @@ jobs:
         $msi = "$toolsDir/PAC/powerapps-cli-1.0.msi"
         Invoke-WebRequest -Method Get -uri "https://aka.ms/PowerAppsCLI" -OutFile "$msi"
         
-        $arguments = "/i `"$msi`" /quiet /L*v `"$log`""
-        Write-Host  "##[command]Install $arguments"
-        Start-Process msiexec.exe -ArgumentList $arguments -Wait
-        Write-Host  "##[section]Log:"
-        Get-Content $log | Write-Host
-        Write-Host  '##[endgroup]'
-
-        # Reload the PATH variable
-        Write-Host  '##[group]Update PATH Variable'
-        Write-Host  "##[command]Reload the PATH variable"
-        Write-Host  "##[command]Add PowerAppsCLI to PATH variable"
-        [System.Environment]::SetEnvironmentVariable("$($env:LOCALAPPDATA)\Microsoft\PowerAppsCLI\;$($env:Path)", [System.EnvironmentVariableTarget]::User)
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
-        Write-Host  "##[command]Check PATH variable:"
-        Write-Host  "$(($env:path).split(';') | Write-Host)"
-        Write-Host  '##[endgroup]"
-
-        Write-Host  '##[group]Update PowerAppsCLI'
-        Write-Host  "##[command]pac install latest"
-        pac install latest
-        Write-Host  '##[endgroup]'
+        
     
     - name: Tools Bin
       uses: actions/upload-artifact@v2
