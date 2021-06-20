@@ -12,6 +12,7 @@ jobs:
     env:
       DOTNET_NOLOGO: true
       TOOLS_BIN:  ./Tools
+      DIST_BIN:   ./Dist
     steps:
     
     - name: Install Tools
@@ -33,19 +34,31 @@ jobs:
         $coreToolsFolder = Get-ChildItem $toolsDir | Where-Object {$_.Name -match 'Microsoft.CrmSdk.CoreTools.'}
         Move-Item "$($coreToolsFolder.FullName)\content\bin\coretools\*" -Destination "$toolsDir\CoreTools" -Force
         Remove-Item $coreToolsFolder.FullName -Force -Recurse
-        
-        # Install the Tool
-        Write-Host  '##[group]Install "Microsoft Power Apps CLI" from NuGet to: $toolsDir\PAC'
-        New-Item $toolsDir\PAC -ItemType Directory -Force
-        $msi = "$toolsDir/PAC/powerapps-cli-1.0.msi"
-        Invoke-WebRequest -Method Get -uri "https://aka.ms/PowerAppsCLI" -OutFile "$msi"
-        
-        
-    
+
+        ##
+        ##Download PA Cli
+        ##
+        $distDir        = "${{ env.DIST_BIN }}"
+        $sourcePacNuget = "https://www.nuget.org/api/v2/package/Microsoft.PowerApps.CLI"
+        New-Item "$distDir/pac" -ItemType Directory -Force
+        $pac            = (Find-Package -Name Microsoft.PowerApps.CLI -AllVersions | select -First 1)[0]
+        Invoke-WebRequest $sourcePacNuget -OutFile "$distDir/pac/$($pac.Name.ToLower()).$($pac.version).nupkg"
+
+      if: ${{ runner.os == 'Windows' }} 
+
     - name: Tools Bin
       uses: actions/upload-artifact@v2
       with:
         name: Tools-bin-${{ matrix.os }}
         path: ${{ env.TOOLS_BIN }}
         retention-days: 1
+      if: ${{ runner.os == 'Windows' }}
+
+    - name: Dist Bin
+      uses: actions/upload-artifact@v2
+      with:
+        name: Dist-bin
+        path: ${{ env.DIST_BIN }}
+        retention-days: 1
+      if: ${{ runner.os == 'Windows' }}
 
